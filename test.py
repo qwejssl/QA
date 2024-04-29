@@ -24,10 +24,14 @@ def test_exit_intent():
         )
         assert modal.is_displayed(), "The modal did not appear"
 
-        print("Test Passed: Exit intent modal is visible.")
+        # Take a screenshot when modal is visible
+        driver.save_screenshot('exit_intent_modal_visible.png')
+        print("Test Passed: Exit intent modal is visible and screenshot taken.")
 
     except Exception as e:
         print(f"Test Failed: {e}")
+        # Take a screenshot on failure
+        driver.save_screenshot('test.png')
 
     finally:
         driver.quit()
