@@ -1,23 +1,34 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+def test_exit_intent():
+    # Setup Chrome WebDriver
+    driver = webdriver.Chrome()  # Make sure to use the correct WebDriver for your browser
+    driver.set_window_size(1024, 768)  # Set browser window size
+    try:
+        # Navigate to the target webpage
+        driver.get("http://the-internet.herokuapp.com/exit_intent")
+        # Simulate the mouse leaving the viewport using JavaScript
+        driver.execute_script("window.dispatchEvent(new MouseEvent('mouseout', {'bubbles': true}));")
+        time.sleep(2)  # Allow time for the modal to trigger
+        # Wait for the modal to appear and check its visibility
+        modal = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "ouibounce-modal"))
+        )
+        assert modal.is_displayed(), "The modal did not appear"
 
-# Specify the path to chromedriver
-service = Service(executable_path='C:\\Users\\koval\\PycharmProjects\\python-selenium\\chromedriver.exe')
+        print("Test Passed: Exit intent modal is visible.")
+        # Take a screenshot when modal is visible
+        driver.save_screenshot('exit_intent_modal_visible.png')
+        print("Test Passed: Exit intent modal is visible and screenshot taken.")
 
-# Setup WebDriver
-driver = webdriver.Chrome(service=service)
-driver.get("http://the-internet.herokuapp.com/exit_intent")
+    except Exception as e:
+        print(f"Test Failed: {e}")
+        # Take a screenshot on failure
+        driver.save_screenshot('test.png')
 
-try:
-    # Execute JavaScript to trigger exit intent modal
-    driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_tag_name('h3'))
-
-    # Wait for modal to appear
-    modal = driver.find_element_by_id('myModal')
-
-    # Optionally, take a screenshot and save it
-    driver.save_screenshot('C:\\Users\\koval\\PycharmProjects\\python-selenium\\screenshots\\exit_intent_modal.png')
-
-finally:
-    # Close the browser
-    driver.quit()
+    finally:
+        driver.quit()
+test_exit_intent()
